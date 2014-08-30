@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+	default-lazy-init="true">
+
+	<bean class="org.springframework.orm.hibernate4.HibernateExceptionTranslator" />
+	<bean
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	    <!-- Proxool是一种Java数据库连接池技术,目前是和DBCP以及C3P0一起，最为常见的三种JDBC连接池技术。 -->
+    <!-- 日前，Hibernate官方宣布由于Bug太多不再支持DBCP，而推荐使用 Proxool或C3P0。 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="filters" value="stat" />
+        <property name="maxActive" value="200" />
+        <property name="initialSize" value="1" />
+        <property name="maxWait" value="60000" />
+        <property name="minIdle" value="10" />
+        <property name="timeBetweenEvictionRunsMillis" value="3000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="validationQuery" value="SELECT 'x'" />
+        <property name="testWhileIdle" value="true" />
+        <property name="testOnBorrow" value="false" />
+        <property name="testOnReturn" value="false" />
+    </bean>
+
+	<!-- Hibernate SessionFactory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="characterEncoding">utf-8</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.query.substitutions">true 'Y', false 'N'</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+				<!-- Hibernate Search index directory -->
+				<prop key="hibernate.search.default.indexBase">${search.index.basedir}</prop>
+			</props>
+
+		</property>
+		<property name="namingStrategy">
+            <bean class="org.hibernate.cfg.ImprovedNamingStrategy" />
+        </property>
+        <property name="packagesToScan">
+            <list>
+                <value>org.telap.model</value>
+            </list>
+        </property>
+	</bean>
+
+	<!-- Transaction manager for a single Hibernate SessionFactory (alternative to JTA) -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- Activates scanning of @Autowired -->
+	<context:annotation-config />
+	
+	<!-- 使用annotation定义事务，默认使用JDK动态代理方式；如果 proxy-target-class="true"则基于CGLIB类代理;如果mode="aspectj"
+        基于aspectj -->
+    <!--基于JDK动态代理 ，可以将@Transactional放置在接口和具体类上。 -->
+    <!--基于CGLIB类代理，只能将@Transactional放置在具体类上。 -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- Activates scanning of @Repository -->
+	<context:component-scan base-package="org.telap" />
+
+</beans>
