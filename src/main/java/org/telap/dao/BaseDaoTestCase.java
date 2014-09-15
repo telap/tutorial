@@ -12,12 +12,15 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
+import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@ContextConfiguration(locations = { "classpath:**/applicationContext*.xml" })
+@ContextConfiguration(locations = { "classpath:applicationContext-dao.xml" })
+@RunWith(SpringJUnit4ClassRunner.class)  
 public abstract class BaseDaoTestCase extends AbstractTransactionalJUnit4SpringContextTests {
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -28,7 +31,6 @@ public abstract class BaseDaoTestCase extends AbstractTransactionalJUnit4SpringC
 
 	public BaseDaoTestCase() {
 		String className = this.getClass().getName();
-
 		try {
 			rb = ResourceBundle.getBundle(className);
 		} catch (MissingResourceException mre) {
