@@ -4,17 +4,39 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%p [%t] %c{1}.%M(%L) | %m%n"/>
         </Console>
+        <RollingRandomAccessFile name="ROLLFILE" fileName="${sys:catalina.home}/logs/telap.log"
+								 filePattern="$${sys:catalina.home}/logs/$${date:yyyy-MM}/telap-%d{yyyy-MM-dd}-%i.log.gz">
+			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="%d{ABSOLUTE} &lt;%c&gt; %5p [%t]: %m%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+			<DefaultRolloverStrategy />
+		</RollingRandomAccessFile>
     </Appenders>
 
     <Loggers>
-        <Logger name="org.apache" level="warn"/>
-        <Logger name="org.hibernate" level="warn"/>
-        <Logger name="org.hibernate.SQL" level="warn"/>
-        <Logger name="org.springframework" level="warn"/>
-        <Logger name="org.appfuse" level="debug"/>
-
-        <Root level="warn">
+        <Root level="INFO">
             <AppenderRef ref="Console"/>
         </Root>
+        <Logger name="org.apache" level="DEBUG" additivity="false">
+        	<AppenderRef ref="Console" />	
+        </Logger>
+        <Logger name="org.hibernate" level="DEBUG" additivity="false">
+        	<AppenderRef ref="Console" />	
+        </Logger>
+        <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        	<AppenderRef ref="Console" />	
+        </Logger>
+        <Logger name="org.springframework" level="DEBUG" additivity="false">
+        	<AppenderRef ref="Console"/>
+        </Logger>
+		<Logger name="java.sql" level="DEBUG" additivity="false">
+			<AppenderRef ref="Console" />		
+		</Logger>
+		<Logger name="org.telap" level="DEBUG" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="ROLLFILE" />			
+		</Logger>
     </Loggers>
 </Configuration>
