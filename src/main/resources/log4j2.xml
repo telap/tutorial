@@ -19,23 +19,12 @@
         <Root level="INFO">
             <AppenderRef ref="Console"/>
         </Root>
-        <Logger name="org.apache" level="DEBUG" additivity="false">
-        	<AppenderRef ref="Console" />	
-        </Logger>
-        <Logger name="org.hibernate" level="DEBUG" additivity="false">
-        	<AppenderRef ref="Console" />	
-        </Logger>
-        <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
-        	<AppenderRef ref="Console" />	
-        </Logger>
-        <Logger name="org.springframework" level="DEBUG" additivity="false">
-        	<AppenderRef ref="Console"/>
-        </Logger>
-		<Logger name="java.sql" level="DEBUG" additivity="false">
-			<AppenderRef ref="Console" />		
-		</Logger>
+        <Logger name="org.apache" level="DEBUG" />
+        <Logger name="org.hibernate" level="DEBUG" />
+        <Logger name="org.hibernate.SQL" level="DEBUG"/>
+        <Logger name="org.springframework" level="DEBUG" />
+		<Logger name="java.sql" level="DEBUG" />
 		<Logger name="org.telap" level="DEBUG" additivity="false">
-			<AppenderRef ref="Console" />
 			<AppenderRef ref="ROLLFILE" />			
 		</Logger>
     </Loggers>
